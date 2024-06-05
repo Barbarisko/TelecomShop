@@ -12,5 +12,9 @@
         public required float InternetLimit { get; set; }
         public required float VoiceBalance { get; set; }
         public required float VoiceLimit { get; set; }
+        public required float OneTimeTotal { get; set; }
+        public required float RecurrentTotal { get; set; }
+
+
     }
 }

@@ -162,15 +162,11 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.PriceOneTime)
                 .HasDefaultValueSql("0.0")
                 .HasColumnName("price_one_time");
-            entity.Property(e => e.PriceOneTimeTotal)
-                .HasDefaultValueSql("0.0")
-                .HasColumnName("price_one_time_total");
+           
             entity.Property(e => e.PriceRecurrent)
                 .HasDefaultValueSql("0.0")
                 .HasColumnName("price_recurrent");
-            entity.Property(e => e.PriceRecurrentTotal)
-                .HasDefaultValueSql("0.0")
-                .HasColumnName("price_recurrent_total");
+          
             entity.Property(e => e.Type)
                 .HasColumnType("character varying")
                 .HasColumnName("type");

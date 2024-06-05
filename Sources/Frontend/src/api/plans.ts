@@ -26,6 +26,17 @@ export async function GetAll(): Promise<CallResult<Array<PlanModel>>> {
         if (data == undefined) {
             throw new Error("No token in response");
         }
+        data.forEach((plan: PlanModel) =>
+            {
+                let charCopy = JSON.parse(JSON.stringify(plan.characteristics)) as any;
+                plan.characteristics = new Map<string, string>();
+                if(charCopy == null)
+                    return;
+                Object.keys(charCopy).forEach((key: string) => {
+                    plan.characteristics.set(key, charCopy[key]);
+                });
+            });
+
         return new CallResult<Array<PlanModel>>(true, "", data);
     } catch (error: any) {
         // Handle any errors that occur during the API call
@@ -57,6 +68,13 @@ export async function GetCurrent(): Promise<CallResult<PlanModel>> {
         if (data == undefined) {
             throw new Error("No token in response");
         }
+
+        let charCopy = JSON.parse(JSON.stringify(data.characteristics)) as any;
+        data.characteristics = new Map<string, string>();
+        Object.keys(charCopy).forEach((key: string) => {
+            data.characteristics.set(key, charCopy[key]);
+        });
+
         return new CallResult<PlanModel>(true, "", data);
     } catch (error: any) {
         // Handle any errors that occur during the API call

@@ -11,9 +11,9 @@
         </p>
         <div class="collapse" id="collapseExample">
             <div class="card card-body">
-                <ul class="list-group list-group-horizontal" v-for="charKey in characteristicsKeys">
-                    <li class="list-group-item">{{ charKey }}</li>
-                    <li class="list-group-item">{{ (props.plan?.characteristics as any)[charKey] }}</li>
+                <ul class="list-group list-group-horizontal" v-for="char in props.plan?.characteristics">
+                    <li class="list-group-item w-50">{{ char[0] }}</li>
+                    <li class="list-group-item w-50">{{ char[1] }}</li>
                 </ul>
             </div>
         </div>
@@ -33,8 +33,6 @@ const props = defineProps({
         type: Boolean
     }
 });
-const characteristicsKeys = computed(() => {
-    var chars: Array<[string, string]> = [];
-    return Object.keys(props.plan?.characteristics as any);
-})
+
+
 </script>

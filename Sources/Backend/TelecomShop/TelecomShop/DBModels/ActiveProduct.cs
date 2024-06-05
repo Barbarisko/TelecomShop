@@ -32,6 +32,9 @@ public partial class ActiveProduct:BaseEntity
     public float? VoiceLeft { get; set; }
 
     public float? SmsLeft { get; set; }
+    public float? PriceOneTimeTotal { get; set; }
+
+    public float? PriceRecurrentTotal { get; set; }
 
     public virtual BillingAccount? BillingAccount { get; set; }
 

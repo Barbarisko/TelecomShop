@@ -27,7 +27,7 @@ namespace TelecomShop.Controllers
 
         [Authorize]
         [HttpGet]
-        public Plan[] GetAll()
+        public IEnumerable<Plan> GetAll()
         {
             var userId = ClaimsHelper.ID(User.Claims);
             var user = _unitOfWork.UserRepo.Get(userId);
@@ -54,22 +54,44 @@ namespace TelecomShop.Controllers
 
 
             var availableOptions = _unitOfWork.ProductRepo.GetAll()
-                .Where((productOption) => productOption.ActiveFrom <= DateTime.Now
-                        || productOption.ActiveFrom == null
-                        && productOption.ActiveTo >= DateTime.Now
-                        || productOption.ActiveTo == null
-                        && productOption.ParentId == null
-                        && upgradeOptions.Contains(productOption.Id)
-                        || downgradeOptions.Contains(product.Id));
+                .Where((productOption) =>
+                {
+                    return (productOption.ActiveFrom <= DateTime.Now
+                            || productOption.ActiveFrom == null)
+                            && (productOption.ActiveTo >= DateTime.Now
+                            || productOption.ActiveTo == null)
+                            && productOption.ParentId == null
+                            && (upgradeOptions.Contains(productOption.Id)
+                            || downgradeOptions.Contains(product.Id));
+                        });
 
-            var plans = new Plan[availableOptions.Count()];
+            var plans = new List<Plan>();
+            
+
             foreach(var availableOption in availableOptions) {
-                plans.Append(new Plan
+
+                var charInvolvements = _unitOfWork.CharInvolvementRepo.GetAll().Where((info) => info.ProductId == product.Id);
+
+                var charsForFrontend = new Dictionary<string, string>();
+                var charsListValues = new Dictionary<string, string>();
+
+                foreach (var charInv in charInvolvements)
+                {
+                    charsForFrontend.Add(_unitOfWork.CharacteristicRepo
+                                    .Get(charInv.CharId ?? 0).Name, charInv.DefaultValue);
+                    if (charInv.ListValues != null)
+                        charsListValues.Add(_unitOfWork.CharacteristicRepo
+                                       .Get(charInv.CharId ?? 0).Name, charInv.ListValues);
+                }
+
+                plans.Add(new Plan
                 {
                     Name = availableOption.Name,
                     Description = availableOption.Description,
                     PriceOneTimeTotal = availableOption.PriceOneTime,
-                    PriceRecurrentTotal = availableOption.PriceRecurrent
+                    PriceRecurrentTotal = availableOption.PriceRecurrent,
+                    Characteristics = charsForFrontend,
+                    CharacteristicListValues = charsListValues
                 });
             }
             
@@ -102,8 +124,8 @@ namespace TelecomShop.Controllers
             {
                Name = product.Name,
                Description = product.Description,
-               PriceRecurrentTotal = product.PriceRecurrentTotal,
-               PriceOneTimeTotal = product.PriceOneTimeTotal,
+               PriceRecurrentTotal = product.PriceRecurrent,
+               PriceOneTimeTotal = product.PriceOneTime,
                Characteristics = characteristics
             };
         }

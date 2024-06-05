@@ -21,6 +21,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<ISuperpowerService, SuperpowersService>();
 
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<TelcoShopDbContext>(opt =>
                                  opt.UseNpgsql(builder.Configuration.GetConnectionString("db")));

@@ -4,7 +4,8 @@
         <Usage :metric="'Internet'" :limit="user?.internetLimit" :used="user?.internetBalance"/>
         <Usage :metric="'Voice'" :limit="user?.voiceLimit" :used="user?.voiceBalance"/>
 
-        <div class="col">
+        <div class="row">
+            <div class="col">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Your number: {{user?.phoneNumber}}</h5>
@@ -12,7 +13,6 @@
                 </div>
             </div>
         </div>
-        <div class="row">
             <div class="col">
                 <div class="card">
                     <div class="card-body">

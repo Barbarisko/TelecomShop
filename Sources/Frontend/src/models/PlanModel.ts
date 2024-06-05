@@ -4,7 +4,9 @@ export default class PlanModel
         public description: string,
         public oneTimeTotal: number,
         public recurrentTotal: number,
-        public characteristics: Map<string, string>)
+        public characteristics: Map<string, string>,
+        public characteristicListValues: Map<string, string>)
+    
     {
     }
 }

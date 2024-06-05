@@ -21,10 +21,6 @@ public partial class Product:BaseEntity
 
     public float? PriceRecurrent { get; set; }
 
-    public float? PriceOneTimeTotal { get; set; }
-
-    public float? PriceRecurrentTotal { get; set; }
-
     public string? Description { get; set; }
 
     public string? UpgradeOptions { get; set; }

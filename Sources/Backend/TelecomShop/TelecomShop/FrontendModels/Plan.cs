@@ -10,6 +10,7 @@
         public float? PriceRecurrentTotal { get; set; }
 
         public Dictionary<string, string> Characteristics { get; set; }
+        public Dictionary<string, string> CharacteristicListValues { get; set; }
 
     }
 }
