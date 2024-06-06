@@ -5,11 +5,11 @@
         <p class="card-text">{{plan?.description}}</p>
         <p class="fw-semibold">{{plan?.recurrentTotal}}</p>
         <p class="d-inline-flex gap-1">
-            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" :data-bs-target="`#plan${plan?.id}`" aria-expanded="false" :aria-controls="`#plan${plan?.id}`">
                 Show characteristics
                         </button>
         </p>
-        <div class="collapse" id="collapseExample">
+        <div class="collapse" :id="`plan${plan?.id}`">
             <div class="card card-body">
                 <ul class="list-group list-group-horizontal" v-for="char in props.plan?.characteristics">
                     <li class="list-group-item w-50">{{ char[0] }}</li>

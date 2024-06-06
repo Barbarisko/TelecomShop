@@ -23,13 +23,15 @@ public partial class TelcoShopDbContext : DbContext
 
     public virtual DbSet<Characteristic> Characteristics { get; set; }
 
+    public virtual DbSet<MonthlyUsage> MonthlyUsages { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost:5432;Database=postgres;Username=postgres;Password=1234");
+        => optionsBuilder.UseNpgsql("Host = localhost; Username = postgres; Password = 1234; Database = postgres;Persist Security Info = True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,11 +51,16 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.ExtendedChars)
                 .HasColumnType("json")
                 .HasColumnName("extended_chars");
+            entity.Property(e => e.OneTimeTotal).HasColumnName("one_time_total");
             entity.Property(e => e.ParentProductId).HasColumnName("parent_product_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.PurchaceDate).HasColumnName("purchace_date");
+            entity.Property(e => e.RecurrentTotal).HasColumnName("recurrent_total");
             entity.Property(e => e.SmsAmount).HasColumnName("sms_amount");
             entity.Property(e => e.SmsLeft).HasColumnName("sms_left");
+            entity.Property(e => e.Status)
+                .HasColumnType("character varying")
+                .HasColumnName("status");
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.VoiceAmount).HasColumnName("voice_amount");
             entity.Property(e => e.VoiceLeft).HasColumnName("voice_left");
@@ -136,6 +143,36 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
+            entity.Property(e => e.Type)
+                .HasColumnType("character varying")
+                .HasColumnName("type");
+        });
+
+        modelBuilder.Entity<MonthlyUsage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("monthly_usage_pk");
+
+            entity.ToTable("monthly_usage");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.ActiveProductId).HasColumnName("active_product_id");
+            entity.Property(e => e.DataUsed).HasColumnName("data_used");
+            entity.Property(e => e.DateEnd).HasColumnName("date_end");
+            entity.Property(e => e.DateStart).HasColumnName("date_start");
+            entity.Property(e => e.MoneySpent).HasColumnName("money_spent");
+            entity.Property(e => e.SmsUsed).HasColumnName("sms_used");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.VoiceUsed).HasColumnName("voice_used");
+
+            entity.HasOne(d => d.ActiveProduct).WithMany(p => p.MonthlyUsages)
+                .HasForeignKey(d => d.ActiveProductId)
+                .HasConstraintName("monthly_usage_active_product_fk");
+
+            entity.HasOne(d => d.User).WithMany(p => p.MonthlyUsages)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("monthly_usage_users_fk");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -152,9 +189,6 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.Description)
                 .HasColumnType("character varying")
                 .HasColumnName("description");
-            entity.Property(e => e.DowngradeOptions)
-                .HasColumnType("character varying")
-                .HasColumnName("downgrade_options");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
@@ -162,17 +196,15 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.PriceOneTime)
                 .HasDefaultValueSql("0.0")
                 .HasColumnName("price_one_time");
-           
             entity.Property(e => e.PriceRecurrent)
                 .HasDefaultValueSql("0.0")
                 .HasColumnName("price_recurrent");
-          
+            entity.Property(e => e.Rate)
+                .HasDefaultValue(50)
+                .HasColumnName("rate");
             entity.Property(e => e.Type)
                 .HasColumnType("character varying")
                 .HasColumnName("type");
-            entity.Property(e => e.UpgradeOptions)
-                .HasColumnType("character varying")
-                .HasColumnName("upgrade_options");
         });
 
         modelBuilder.Entity<User>(entity =>

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class BillingAccount:BaseEntity
+public partial class BillingAccount : BaseEntity
 {
-    public int Id { get; set; }
-
     public int? UserId { get; set; }
 
     public string? Type { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using TelecomShop.DBModels;
 using TelecomShop.ErrorHandlers;
+using TelecomShop.FrontendModels;
 using TelecomShop.Models;
 using TelecomShop.UnitOfWork;
 
@@ -30,7 +31,7 @@ namespace TelecomShop.Controllers
             var userId = ClaimsHelper.ID(User.Claims);
             var user = _unitOfWork.UserRepo.Get(userId);
             var billinfInfo = _unitOfWork.BillingAccountRepo.GetAll().First((info) => info.UserId == userId);
-            var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
+            var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId && info.ParentProductId==null && info.Status=="Active");
 
             CalculateActivePlanPrice(productInfo);
 
@@ -51,8 +52,8 @@ namespace TelecomShop.Controllers
                 VoiceLimit = productInfo.VoiceLeft ?? 0,
                 Name = user.Name ?? "",
                 Surname = user.Surname ?? "", 
-                OneTimeTotal = productInfo.PriceOneTimeTotal ?? 0,
-                RecurrentTotal = productInfo.PriceOneTimeTotal ?? 0
+                OneTimeTotal = productInfo.OneTimeTotal ?? 0,
+                RecurrentTotal = productInfo.OneTimeTotal ?? 0
             };
         }
         [HttpGet]
@@ -60,39 +61,82 @@ namespace TelecomShop.Controllers
         {
             var plan = _unitOfWork.ProductRepo.Get(activeProduct.ProductId ?? 0);
 
-            if (activeProduct.PriceOneTimeTotal == 0 || activeProduct.PriceRecurrentTotal == 0)
+            if (activeProduct.OneTimeTotal == 0 || activeProduct.RecurrentTotal == 0)
             {
-                activeProduct.PriceOneTimeTotal = plan.PriceOneTime;
-                activeProduct.PriceRecurrentTotal = plan.PriceRecurrent;
+                activeProduct.OneTimeTotal = plan.PriceOneTime;
+                activeProduct.RecurrentTotal = plan.PriceRecurrent;
             }
 
             var activeAddons = _unitOfWork.ActiveProductRepo.GetAll().Where(x => x.ParentProductId == activeProduct.ProductId);
 
             foreach (var activeAddon in activeAddons)
             {
-                activeProduct.PriceOneTimeTotal += activeAddon.PriceOneTimeTotal;
-                activeProduct.PriceRecurrentTotal += activeAddon.PriceRecurrentTotal;
+                activeProduct.OneTimeTotal += activeAddon.OneTimeTotal;
+                activeProduct.RecurrentTotal += activeAddon.RecurrentTotal;
             }
         }
 
         [HttpGet]
-        public void GenerateStatistics(int cpiId)
+        public List<UsageStats> GetStatistics(int cpiId)
         {
-            var plan = _unitOfWork.ProductRepo.Get(activeProduct.ProductId ?? 0);
+            var userId = ClaimsHelper.ID(User.Claims);
+            var user = _unitOfWork.UserRepo.Get(userId);
+            //var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
 
-            if (activeProduct.PriceOneTimeTotal == 0 || activeProduct.PriceRecurrentTotal == 0)
-            {
-                activeProduct.PriceOneTimeTotal = plan.PriceOneTime;
-                activeProduct.PriceRecurrentTotal = plan.PriceRecurrent;
+            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u)=>u.UserId==userId && u.ActiveProductId==cpiId);
+
+            var statsForFrontend = new List<UsageStats>();
+
+            foreach (var usage in usageInfo) {
+                statsForFrontend.Add(new UsageStats()
+                {
+                    DateStart = new DateTime(usage.DateStart ?? DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue),
+                    DateEnd = new DateTime(usage.DateEnd ?? DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue),
+                    DataUsed = usage.DataUsed,
+                    SmsUsed = usage.SmsUsed,
+                    VoiceUsed = usage.VoiceUsed,
+                    MoneySpent = usage.MoneySpent
+                });
             }
 
-            var activeAddons = _unitOfWork.ActiveProductRepo.GetAll().Where(x => x.ParentProductId == activeProduct.ProductId);
+            return statsForFrontend;
+        }
 
-            foreach (var activeAddon in activeAddons)
-            {
-                activeProduct.PriceOneTimeTotal += activeAddon.PriceOneTimeTotal;
-                activeProduct.PriceRecurrentTotal += activeAddon.PriceRecurrentTotal;
-            }
+        [HttpGet]
+        public string GenerateFileStatistics(int cpiId)
+        {
+            var userId = ClaimsHelper.ID(User.Claims);
+            var user = _unitOfWork.UserRepo.Get(userId);
+            //var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
+
+            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u) => u.UserId == userId && u.ActiveProductId == cpiId).ToList();
+
+            //var totalDataUsed = usageInfo.Sum(r => r.);
+            //var averageDailyUsage = records.Average(r => r.DataUsedInMB);
+            //var maximumDailyUsage = records.Max(r => r.DataUsedInMB);
+            //var minimumDailyUsage = records.Min(r => r.DataUsedInMB);
+
+            //return new DataUsageStatistics
+            //{
+            //    TotalDataUsed = totalDataUsed,
+            //    AverageDailyUsage = averageDailyUsage,
+            //    MaximumDailyUsage = maximumDailyUsage,
+            //    MinimumDailyUsage = minimumDailyUsage
+            //};
+
+            //using (var writer = new StreamWriter(filePath))
+            //{
+            //    writer.WriteLine("Statistic,Value");
+            //    writer.WriteLine($"Total Data Used (MB),{statistics.TotalDataUsed}");
+            //    writer.WriteLine($"Average Daily Usage (MB),{statistics.AverageDailyUsage}");
+            //    writer.WriteLine($"Maximum Daily Usage (MB),{statistics.MaximumDailyUsage}");
+            //    writer.WriteLine($"Minimum Daily Usage (MB),{statistics.MinimumDailyUsage}");
+            //}
+
+            //string filePath = "DataUsageStatistics.csv";
+            //fileService.WriteStatisticsToFile(statistics, filePath);
+
+            return "stats";
         }
     }
 }

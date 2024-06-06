@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class User:BaseEntity
+public partial class User : BaseEntity
 {
-    public int Id { get; set; }
-
     public string? Name { get; set; }
 
     public string? Surname { get; set; }
@@ -18,4 +16,6 @@ public partial class User:BaseEntity
     public virtual ICollection<ActiveProduct> ActiveProducts { get; set; } = new List<ActiveProduct>();
 
     public virtual ICollection<BillingAccount> BillingAccounts { get; set; } = new List<BillingAccount>();
+
+    public virtual ICollection<MonthlyUsage> MonthlyUsages { get; set; } = new List<MonthlyUsage>();
 }

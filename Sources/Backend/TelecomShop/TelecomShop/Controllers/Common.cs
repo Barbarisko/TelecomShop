@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
+using TelecomShop.DBModels;
 using TelecomShop.Models;
+using TelecomShop.Repository;
 
 namespace TelecomShop.Controllers
 {
@@ -26,6 +28,18 @@ namespace TelecomShop.Controllers
             {
                 return claim.Type == ClaimTypes.NameIdentifier;
             }).Value);
+        }
+    }
+    public class Common { 
+        public static ActiveProduct? GetCurrentActivePlan(int userId, IRepository<ActiveProduct> productRepo)
+        {
+            return productRepo.GetAll().FirstOrDefault((info) =>
+            {
+                return info.UserId == userId
+                    && info.ParentProductId == null
+                    && info.Status == "Active";
+            }, null);
+
         }
     }
 }

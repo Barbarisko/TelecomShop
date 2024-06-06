@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class CharInvolvement:BaseEntity
+public partial class CharInvolvement : BaseEntity
 {
-    public int Id { get; set; }
-
     public int? ProductId { get; set; }
 
     public int? CharId { get; set; }

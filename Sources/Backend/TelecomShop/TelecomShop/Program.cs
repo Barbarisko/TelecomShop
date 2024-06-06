@@ -32,6 +32,7 @@ builder.Services.AddScoped<IRepository<Characteristic>, Repository<Characteristi
 builder.Services.AddScoped<IRepository<CharInvolvement>, Repository<CharInvolvement>>();
 builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<MonthlyUsage>, Repository<MonthlyUsage>>();
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -88,6 +89,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

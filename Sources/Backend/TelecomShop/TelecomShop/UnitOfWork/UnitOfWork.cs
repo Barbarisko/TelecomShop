@@ -3,7 +3,7 @@ using TelecomShop.Repository;
 
 namespace TelecomShop.UnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly TelcoShopDbContext _context;
 
@@ -14,6 +14,7 @@ namespace TelecomShop.UnitOfWork
         public IRepository<Product> ProductRepo { get; }
         public IRepository<User> UserRepo { get; }
 
+        public IRepository<MonthlyUsage> UsageRepo { get; }
 
         public UnitOfWork(TelcoShopDbContext context,
             IRepository<ActiveProduct> activeProductRepo,
@@ -21,7 +22,8 @@ namespace TelecomShop.UnitOfWork
             IRepository<Characteristic> characteristicRepo,
             IRepository<CharInvolvement> charInvolvementRepo,
             IRepository<Product> productRepo,
-            IRepository<User> userRepo)
+            IRepository<User> userRepo,
+            IRepository<MonthlyUsage> usageRepo)
         {
             _context = context;
             ActiveProductRepo = activeProductRepo;
@@ -30,15 +32,16 @@ namespace TelecomShop.UnitOfWork
             CharInvolvementRepo = charInvolvementRepo;
             ProductRepo = productRepo;
             UserRepo = userRepo;
+            UsageRepo = usageRepo;
         }
         public void Save()
         {
             _context.SaveChanges();
         }
 
-        public void Dispose()
-        {
-            Save();
-        }
+        //public void Dispose()
+        //{
+        //    Save();
+        //}
     }
 }

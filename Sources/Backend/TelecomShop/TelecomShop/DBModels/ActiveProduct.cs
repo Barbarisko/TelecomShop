@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class ActiveProduct:BaseEntity
+public partial class ActiveProduct : BaseEntity
 {
-    public int Id { get; set; }
-
     public int UserId { get; set; }
 
     public int? ProductId { get; set; }
@@ -25,18 +23,23 @@ public partial class ActiveProduct:BaseEntity
 
     public int? BillingAccountId { get; set; }
 
-    public DateTime? PurchaceDate { get; set; }
-
     public float? DataLeft { get; set; }
 
     public float? VoiceLeft { get; set; }
 
     public float? SmsLeft { get; set; }
-    public float? PriceOneTimeTotal { get; set; }
 
-    public float? PriceRecurrentTotal { get; set; }
+    public float? OneTimeTotal { get; set; }
+
+    public float? RecurrentTotal { get; set; }
+
+    public string? Status { get; set; }
+
+    public DateOnly? PurchaceDate { get; set; }
 
     public virtual BillingAccount? BillingAccount { get; set; }
+
+    public virtual ICollection<MonthlyUsage> MonthlyUsages { get; set; } = new List<MonthlyUsage>();
 
     public virtual Product? Product { get; set; }
 

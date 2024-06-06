@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using TelecomShop.ErrorHandlers;
 using TelecomShop.Models;
 using TelecomShop.Services;
@@ -9,11 +8,17 @@ using TelecomShop.UnitOfWork;
 
 namespace TelecomShop.Controllers
 {
+    public struct ConnectSuperpowerData
+    {
+        public int addonId { get; set; }
+        public string? extendedChars { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class Superpowers : ControllerBase
     {
-        
+
         private readonly ILogger<Auth> _logger;
         private readonly IUnitOfWork unitOfWork;
 
@@ -32,7 +37,7 @@ namespace TelecomShop.Controllers
         {
             var userId = ClaimsHelper.ID(User.Claims);
             var user = unitOfWork.UserRepo.Get(userId);
-            var cpi = unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
+            var cpi = Common.GetCurrentActivePlan(userId, unitOfWork.ActiveProductRepo);
             var product = unitOfWork.ProductRepo.Get(cpi.ProductId ?? 0);
 
             var addons = superpowerService.GetAll(product.Id);
@@ -55,8 +60,19 @@ namespace TelecomShop.Controllers
                                        .Get(charInv.CharId ?? 0).Name, charInv.ListValues);
                 }
 
+                var isActive = unitOfWork.ActiveProductRepo.GetAll().Count((info) =>
+                {
+                    return info.UserId == userId
+                        && info.ProductId == addon.Id
+                        && info.ParentProductId != null
+                        && info.Status == "Active";
+                }) > 0;
+
                 superpowers.Add(new Superpower
                 {
+                    Id = addon.Id,
+                    Type = addon.Type,
+                    IsActive = isActive,
                     Name = addon.Name,
                     Description = addon.Description,
                     PriceOneTimeTotal = addon.PriceOneTime,
@@ -71,18 +87,18 @@ namespace TelecomShop.Controllers
         }
 
 
+
         [Authorize]
         [HttpGet]
         public List<Superpower> GetCurrent()
         {
             var userId = ClaimsHelper.ID(User.Claims);
-            var user = unitOfWork.UserRepo.Get(userId);
-            var cpi = unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
+            var cpi = Common.GetCurrentActivePlan(userId, unitOfWork.ActiveProductRepo);
 
             var superpowers = new List<Superpower>();
 
 
-            var addons = unitOfWork.ActiveProductRepo.GetAll().Where((a)=> a.ParentProductId == cpi.Id);
+            var addons = unitOfWork.ActiveProductRepo.GetAll().Where((a) => a.ParentProductId == cpi.Id);
 
             foreach (var addon in addons)
             {
@@ -106,34 +122,32 @@ namespace TelecomShop.Controllers
                 {
                     Name = product.Name,
                     Description = product.Description,
-                    PriceOneTimeTotal = addon.PriceOneTimeTotal,
-                    PriceRecurrentTotal = addon.PriceRecurrentTotal,
+                    PriceOneTimeTotal = addon.OneTimeTotal,
+                    PriceRecurrentTotal = addon.RecurrentTotal,
                     Characteristics = charsForFrontend,
                     CharacteristicListValues = charsListValues
                 });
             }
 
             return superpowers;
-           // return [new Superpower { Name = "1" }, new Superpower { Name = "2" }];
         }
 
-        [Authorize]
         [HttpDelete]
-        public void DisconnectSuperpower(int addonId)
+        public bool DisconnectSuperpower(int addonId)
         {
-           superpowerService.DisconnectAddon(addonId);
+            superpowerService.DisconnectAddon(addonId);
+            return true;
         }
 
 
-        [Authorize]
         [HttpPost]
-        public Plan ConnectSuperpower(int addonId, int planId, string? extendedChars)
+        public bool ConnectSuperpower([Required][FromBody] ConnectSuperpowerData data)
         {
-           superpowerService.AddAddonToPlan(addonId, planId, extendedChars);
+            var userId = ClaimsHelper.ID(User.Claims);
+            superpowerService.AddAddonToPlan(data.addonId, userId, data.extendedChars);
 
-            Plans p = new Plans(_logger, unitOfWork);
-
-            return p.GetCurrent();
+            unitOfWork.Save();
+            return true;
         }
 
 

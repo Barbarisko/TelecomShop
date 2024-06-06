@@ -14,6 +14,7 @@ namespace TelecomShop.UnitOfWork
         public IRepository<CharInvolvement> CharInvolvementRepo { get; }
         public IRepository<Product> ProductRepo { get; }
         public IRepository<User> UserRepo { get; }
+        public IRepository<MonthlyUsage> UsageRepo { get; }
 
         void Save();
 

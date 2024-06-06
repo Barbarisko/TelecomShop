@@ -3,19 +3,17 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class Product:BaseEntity
+public partial class Product : BaseEntity
 {
-    public int Id { get; set; }
-
     public string? Name { get; set; }
 
     public string? Type { get; set; }
 
     public int? ParentId { get; set; }
 
-    public DateTime? ActiveFrom { get; set; }
+    public DateOnly? ActiveFrom { get; set; }
 
-    public DateTime? ActiveTo { get; set; }
+    public DateOnly? ActiveTo { get; set; }
 
     public float? PriceOneTime { get; set; }
 
@@ -23,9 +21,7 @@ public partial class Product:BaseEntity
 
     public string? Description { get; set; }
 
-    public string? UpgradeOptions { get; set; }
-
-    public string? DowngradeOptions { get; set; }
+    public int Rate { get; set; }
 
     public virtual ICollection<ActiveProduct> ActiveProducts { get; set; } = new List<ActiveProduct>();
 

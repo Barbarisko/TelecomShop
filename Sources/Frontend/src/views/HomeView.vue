@@ -23,9 +23,9 @@
                             </div>
                             
                             <a href="#" class="btn btn-primary" 
-                            style="display: flex; align-items: center;justify-content: center;">
-                            Top up the balance
-                        </a>
+                                style="display: flex; align-items: center;justify-content: center;">
+                                Top up the balance
+                            </a>
                     </div>
                 </div>
             </div>
@@ -39,8 +39,18 @@
         </div>
         <div class="col">
             <h3>Your current superpowers:</h3>
-            <Superpower v-for="p in activepowers" :power="p" :hardcoded-width="false"
-                class="my-2"></Superpower>
+            <div v-if="activepowers.length==0">
+                <p>There are currently no superpowers activated. Would you like some?</p>
+                <RouterLink class="btn btn-primary" to="/superpowers" 
+                                style="display: flex; align-items: center;justify-content: center;">
+                                Select Superpowers
+                </RouterLink>
+            </div>
+
+            <Superpower v-for="p in activepowers" :power="p" :hardcoded-width="false" :show-buttons="false"
+                class="my-2">
+            </Superpower>
+            
         </div>
     </div>
 </div>

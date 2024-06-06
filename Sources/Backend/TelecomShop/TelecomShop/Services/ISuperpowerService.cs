@@ -7,7 +7,7 @@ namespace TelecomShop.Services
         public IEnumerable<Product> GetAll(int planId);
         public void DisconnectAddon(int addonId);
 
-        public void AddAddonToPlan(int addonId, int planId, string? extendedChars);
+        public void AddAddonToPlan(int addonId, int userId, string? extendedChars);
 
 
     }
