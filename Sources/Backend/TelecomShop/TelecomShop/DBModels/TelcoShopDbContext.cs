@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TelecomShop.DBModels;
 
-public partial class TelcoShopDbContext : DbContext
+public partial class TelcoShopDBContext : DbContext
 {
-    public TelcoShopDbContext()
+    public TelcoShopDBContext()
     {
     }
 
-    public TelcoShopDbContext(DbContextOptions<TelcoShopDbContext> options)
+    public TelcoShopDBContext(DbContextOptions<TelcoShopDBContext> options)
         : base(options)
     {
     }
@@ -23,9 +23,9 @@ public partial class TelcoShopDbContext : DbContext
 
     public virtual DbSet<Characteristic> Characteristics { get; set; }
 
-    public virtual DbSet<MonthlyUsage> MonthlyUsages { get; set; }
-
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<Usage> Usages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -148,33 +148,6 @@ public partial class TelcoShopDbContext : DbContext
                 .HasColumnName("type");
         });
 
-        modelBuilder.Entity<MonthlyUsage>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("monthly_usage_pk");
-
-            entity.ToTable("monthly_usage");
-
-            entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("id");
-            entity.Property(e => e.ActiveProductId).HasColumnName("active_product_id");
-            entity.Property(e => e.DataUsed).HasColumnName("data_used");
-            entity.Property(e => e.DateEnd).HasColumnName("date_end");
-            entity.Property(e => e.DateStart).HasColumnName("date_start");
-            entity.Property(e => e.MoneySpent).HasColumnName("money_spent");
-            entity.Property(e => e.SmsUsed).HasColumnName("sms_used");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.VoiceUsed).HasColumnName("voice_used");
-
-            entity.HasOne(d => d.ActiveProduct).WithMany(p => p.MonthlyUsages)
-                .HasForeignKey(d => d.ActiveProductId)
-                .HasConstraintName("monthly_usage_active_product_fk");
-
-            entity.HasOne(d => d.User).WithMany(p => p.MonthlyUsages)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("monthly_usage_users_fk");
-        });
-
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("products_pk");
@@ -205,6 +178,32 @@ public partial class TelcoShopDbContext : DbContext
             entity.Property(e => e.Type)
                 .HasColumnType("character varying")
                 .HasColumnName("type");
+        });
+
+        modelBuilder.Entity<Usage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("monthly_usage_pk");
+
+            entity.ToTable("usage");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.ActiveProductId).HasColumnName("active_product_id");
+            entity.Property(e => e.DataUsed).HasColumnName("data_used");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.MoneySpent).HasColumnName("money_spent");
+            entity.Property(e => e.SmsUsed).HasColumnName("sms_used");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.VoiceUsed).HasColumnName("voice_used");
+
+            entity.HasOne(d => d.ActiveProduct).WithMany(p => p.Usages)
+                .HasForeignKey(d => d.ActiveProductId)
+                .HasConstraintName("monthly_usage_active_product_fk");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Usages)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("monthly_usage_users_fk");
         });
 
         modelBuilder.Entity<User>(entity =>

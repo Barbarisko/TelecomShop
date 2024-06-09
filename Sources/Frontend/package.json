@@ -25,7 +25,8 @@
     "three": "^0.161.0",
     "vue": "^3.3.11",
     "vue-form-composable": "^0.0.2-rc.0",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-datepicker": "^0.4.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",

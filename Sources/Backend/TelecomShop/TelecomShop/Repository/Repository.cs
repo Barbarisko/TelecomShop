@@ -9,9 +9,9 @@ namespace TelecomShop.Repository
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly DbSet<TEntity> _contextDbSet;
-        private readonly TelcoShopDbContext _context;
+        private readonly TelcoShopDBContext _context;
 
-        public Repository(TelcoShopDbContext context)
+        public Repository(TelcoShopDBContext context)
         {
             _contextDbSet = context.Set<TEntity>();
             _context = context;

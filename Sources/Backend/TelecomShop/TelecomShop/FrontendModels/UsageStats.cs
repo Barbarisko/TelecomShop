@@ -3,9 +3,8 @@
     public class UsageStats
     {
 
-        public required DateTime DateStart { get; set; }
+        public required DateTime Date { get; set; }
 
-        public required DateTime DateEnd { get; set; }
 
         public int? DataUsed { get; set; }
 

@@ -23,7 +23,7 @@ builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ISuperpowerService, SuperpowersService>();
 
-builder.Services.AddEntityFrameworkNpgsql().AddDbContext<TelcoShopDbContext>(opt =>
+builder.Services.AddEntityFrameworkNpgsql().AddDbContext<TelcoShopDBContext>(opt =>
                                  opt.UseNpgsql(builder.Configuration.GetConnectionString("db")));
 
 builder.Services.AddScoped<IRepository<ActiveProduct>, Repository<ActiveProduct>>();
@@ -32,7 +32,7 @@ builder.Services.AddScoped<IRepository<Characteristic>, Repository<Characteristi
 builder.Services.AddScoped<IRepository<CharInvolvement>, Repository<CharInvolvement>>();
 builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
-builder.Services.AddScoped<IRepository<MonthlyUsage>, Repository<MonthlyUsage>>();
+builder.Services.AddScoped<IRepository<Usage>, Repository<Usage>>();
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

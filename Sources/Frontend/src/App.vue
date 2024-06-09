@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
 import { useLoginStore } from '@/stores/login'
+import ToastView from './views/ToastView.vue';
 
 
 const loginStore = useLoginStore();
@@ -51,4 +52,5 @@ function SignUp()
   </header>
 
   <RouterView />
+  <ToastView />
 </template>

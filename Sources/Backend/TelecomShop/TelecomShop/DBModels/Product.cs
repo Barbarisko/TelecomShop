@@ -5,6 +5,7 @@ namespace TelecomShop.DBModels;
 
 public partial class Product : BaseEntity
 {
+
     public string? Name { get; set; }
 
     public string? Type { get; set; }

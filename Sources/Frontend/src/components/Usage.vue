@@ -21,4 +21,4 @@ const valueNow = computed(()=> props.limit === undefined || props.used === undef
 const percentsLeft = computed(()=> props.limit === undefined || props.used === undefined? 0 : 100 * valueNow.value / props.limit)
 const percentsUsed = computed(()=> props.limit === undefined || props.used === undefined? 0 : 100 * props.used / props.limit)
 
-</script>@/models/PlanModel
+</script>

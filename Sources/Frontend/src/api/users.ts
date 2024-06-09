@@ -33,3 +33,35 @@ export async function GetStats(): Promise<CallResult<UserStats>> {
         return new CallResult<UserStats>(false, (error as Error).message);
     }
 }
+
+export async function GenerateFileStatistics(dateStart:Date, dateEnd:Date): Promise<CallResult<boolean>> {
+    try {
+        const loginStore = useLoginStore()
+
+        var url = buildUrl(constants.BASE_URL, {
+            path: '/users/GenerateFileStatistics',
+            queryParams: {
+                dateStart:dateStart.toDateString(),
+                dateEnd:dateEnd.toDateString()
+            }
+        });
+        if (url == undefined) {
+            return new CallResult<boolean>(false, "Could not buid api request");
+        }
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + loginStore.data.token
+            }
+            
+        })
+
+      
+        return new CallResult<boolean>(true, "", await response.ok);
+    } catch (error: any) {
+        // Handle any errors that occur during the API call
+        console.error(error)
+        return new CallResult<boolean>(false, (error as Error).message);
+    }
+}

@@ -5,6 +5,7 @@ namespace TelecomShop.DBModels;
 
 public partial class User : BaseEntity
 {
+
     public string? Name { get; set; }
 
     public string? Surname { get; set; }
@@ -17,5 +18,5 @@ public partial class User : BaseEntity
 
     public virtual ICollection<BillingAccount> BillingAccounts { get; set; } = new List<BillingAccount>();
 
-    public virtual ICollection<MonthlyUsage> MonthlyUsages { get; set; } = new List<MonthlyUsage>();
+    public virtual ICollection<Usage> Usages { get; set; } = new List<Usage>();
 }

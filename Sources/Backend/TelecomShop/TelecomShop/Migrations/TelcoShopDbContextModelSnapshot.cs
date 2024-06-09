@@ -10,7 +10,7 @@ using TelecomShop.DBModels;
 
 namespace TelecomShop.Migrations
 {
-    [DbContext(typeof(TelcoShopDbContext))]
+    [DbContext(typeof(TelcoShopDBContext))]
     partial class TelcoShopDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

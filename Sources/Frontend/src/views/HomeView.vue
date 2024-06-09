@@ -47,7 +47,7 @@
                             Select Superpowers
             </RouterLink>
             <div v-for="p in activepowers" class="container">
-            <Superpower v-if="p.isActive==true" :power="p" :hardcoded-width="false" :show-buttons="false"
+            <Superpower :power="p" :hardcoded-width="false" :show-buttons="false"
                 class="my-2">
             </Superpower>
             </div>            

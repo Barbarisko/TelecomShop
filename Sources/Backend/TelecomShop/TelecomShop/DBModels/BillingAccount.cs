@@ -5,6 +5,7 @@ namespace TelecomShop.DBModels;
 
 public partial class BillingAccount : BaseEntity
 {
+
     public int? UserId { get; set; }
 
     public string? Type { get; set; }

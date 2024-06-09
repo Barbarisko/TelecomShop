@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using OfficeOpenXml;
+using System.Data;
 using TelecomShop.DBModels;
 using TelecomShop.ErrorHandlers;
 using TelecomShop.FrontendModels;
@@ -77,21 +79,26 @@ namespace TelecomShop.Controllers
         }
 
         [HttpGet]
-        public List<UsageStats> GetStatistics(int cpiId)
+        public List<UsageStats> GetStatistics(DateTime dateStart, DateTime dateEnd)
         {
             var userId = ClaimsHelper.ID(User.Claims);
             var user = _unitOfWork.UserRepo.Get(userId);
-            //var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
 
-            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u)=>u.UserId==userId && u.ActiveProductId==cpiId);
+            var activePlan = Common.GetCurrentActivePlan(userId, _unitOfWork.ActiveProductRepo);
+
+            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u) =>
+                                                           u.UserId == userId 
+                                                           && u.ActiveProductId == activePlan.Id
+                                                           && (u.Date >= DateOnly.FromDateTime(dateStart) 
+                                                           || u.Date <= DateOnly.FromDateTime(dateEnd)));
 
             var statsForFrontend = new List<UsageStats>();
 
-            foreach (var usage in usageInfo) {
+            foreach (var usage in usageInfo)
+            {
                 statsForFrontend.Add(new UsageStats()
                 {
-                    DateStart = new DateTime(usage.DateStart ?? DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue),
-                    DateEnd = new DateTime(usage.DateEnd ?? DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue),
+                    Date = new DateTime(usage.Date ?? DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue),
                     DataUsed = usage.DataUsed,
                     SmsUsed = usage.SmsUsed,
                     VoiceUsed = usage.VoiceUsed,
@@ -103,40 +110,58 @@ namespace TelecomShop.Controllers
         }
 
         [HttpGet]
-        public string GenerateFileStatistics(int cpiId)
+        public void GenerateFileStatistics(DateTime dateStart, DateTime dateEnd)
         {
             var userId = ClaimsHelper.ID(User.Claims);
             var user = _unitOfWork.UserRepo.Get(userId);
-            //var productInfo = _unitOfWork.ActiveProductRepo.GetAll().First((info) => info.UserId == userId);
 
-            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u) => u.UserId == userId && u.ActiveProductId == cpiId).ToList();
+            var activePlan = Common.GetCurrentActivePlan(userId, _unitOfWork.ActiveProductRepo);
 
-            //var totalDataUsed = usageInfo.Sum(r => r.);
-            //var averageDailyUsage = records.Average(r => r.DataUsedInMB);
-            //var maximumDailyUsage = records.Max(r => r.DataUsedInMB);
-            //var minimumDailyUsage = records.Min(r => r.DataUsedInMB);
+            var usageInfo = _unitOfWork.UsageRepo.GetAll().Where((u) =>
+                                                           u.UserId == userId
+                                                           && u.ActiveProductId == activePlan.Id
+                                                           && (u.Date >= DateOnly.FromDateTime(dateStart)
+                                                           || u.Date <= DateOnly.FromDateTime(dateEnd))).ToArray();
+            
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            //return new DataUsageStatistics
-            //{
-            //    TotalDataUsed = totalDataUsed,
-            //    AverageDailyUsage = averageDailyUsage,
-            //    MaximumDailyUsage = maximumDailyUsage,
-            //    MinimumDailyUsage = minimumDailyUsage
-            //};
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Statistics of usage");
 
-            //using (var writer = new StreamWriter(filePath))
-            //{
-            //    writer.WriteLine("Statistic,Value");
-            //    writer.WriteLine($"Total Data Used (MB),{statistics.TotalDataUsed}");
-            //    writer.WriteLine($"Average Daily Usage (MB),{statistics.AverageDailyUsage}");
-            //    writer.WriteLine($"Maximum Daily Usage (MB),{statistics.MaximumDailyUsage}");
-            //    writer.WriteLine($"Minimum Daily Usage (MB),{statistics.MinimumDailyUsage}");
-            //}
+                // Get the dimensions of the array
+                int rows = usageInfo.Count();
 
-            //string filePath = "DataUsageStatistics.csv";
-            //fileService.WriteStatisticsToFile(statistics, filePath);
+                worksheet.Cells[1, 1].Value = "Date";
+                worksheet.Cells[1, 2].Value = "Data Used";
+                worksheet.Cells[1, 3].Value = "Voice Used";
+                worksheet.Cells[1, 4].Value = "SMS Used";
+                worksheet.Cells[1, 5].Value = "Money Spent";
 
-            return "stats";
+
+                // Load data from array to worksheet
+                for (int row = 1; row <= rows; row++)
+                {
+                    var col = 1;
+                   
+                    worksheet.Cells[row + 1, col ++].Value = usageInfo[row-1].Date;
+                    worksheet.Cells[row + 1, col ++].Value = usageInfo[row-1].DataUsed;
+                    worksheet.Cells[row + 1, col ++].Value = usageInfo[row-1].VoiceUsed;
+                    worksheet.Cells[row + 1, col ++].Value = usageInfo[row-1].SmsUsed;
+                    worksheet.Cells[row + 1, col ++].Value = usageInfo[row-1].MoneySpent;
+                    
+                }
+
+
+                // Save the Excel file
+                string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "UserReport" + DateTime.Now.ToString("yyyy MMM dd hh-mm") + ".xlsx");
+                //string downloadsPath = Path.Combine(System.IO.Directory.GetCurrentDirectory());
+
+                FileInfo fileInfo = new FileInfo(downloadsPath);
+                package.SaveAs(downloadsPath);
+
+            }
+
         }
     }
 }

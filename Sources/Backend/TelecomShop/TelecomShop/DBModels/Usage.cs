@@ -3,13 +3,12 @@ using System.Collections.Generic;
 
 namespace TelecomShop.DBModels;
 
-public partial class MonthlyUsage : BaseEntity
+public partial class Usage : BaseEntity
 {
+
     public int? UserId { get; set; }
 
-    public DateOnly? DateStart { get; set; }
-
-    public DateOnly? DateEnd { get; set; }
+    public DateOnly? Date { get; set; }
 
     public int? DataUsed { get; set; }
 

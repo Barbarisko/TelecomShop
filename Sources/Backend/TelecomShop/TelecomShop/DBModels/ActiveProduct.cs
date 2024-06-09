@@ -5,6 +5,8 @@ namespace TelecomShop.DBModels;
 
 public partial class ActiveProduct : BaseEntity
 {
+    
+
     public int UserId { get; set; }
 
     public int? ProductId { get; set; }
@@ -39,9 +41,9 @@ public partial class ActiveProduct : BaseEntity
 
     public virtual BillingAccount? BillingAccount { get; set; }
 
-    public virtual ICollection<MonthlyUsage> MonthlyUsages { get; set; } = new List<MonthlyUsage>();
-
     public virtual Product? Product { get; set; }
+
+    public virtual ICollection<Usage> Usages { get; set; } = new List<Usage>();
 
     public virtual User User { get; set; } = null!;
 }

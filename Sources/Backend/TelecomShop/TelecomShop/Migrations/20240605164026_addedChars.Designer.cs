@@ -11,7 +11,7 @@ using TelecomShop.DBModels;
 
 namespace TelecomShop.Migrations
 {
-    [DbContext(typeof(TelcoShopDbContext))]
+    [DbContext(typeof(TelcoShopDBContext))]
     [Migration("20240605164026_addedChars")]
     partial class addedChars
     {

@@ -98,7 +98,7 @@ namespace TelecomShop.Controllers
             var superpowers = new List<Superpower>();
 
 
-            var addons = unitOfWork.ActiveProductRepo.GetAll().Where((a) => a.ParentProductId == cpi.Id);
+            var addons = unitOfWork.ActiveProductRepo.GetAll().Where((a) => a.ParentProductId == cpi.Id && a.Status=="Active");
 
             foreach (var addon in addons)
             {

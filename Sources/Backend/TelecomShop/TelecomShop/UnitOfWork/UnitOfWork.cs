@@ -5,7 +5,7 @@ namespace TelecomShop.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly TelcoShopDbContext _context;
+        private readonly TelcoShopDBContext _context;
 
         public IRepository<ActiveProduct> ActiveProductRepo { get; }
         public IRepository<BillingAccount> BillingAccountRepo { get; }
@@ -13,17 +13,18 @@ namespace TelecomShop.UnitOfWork
         public IRepository<CharInvolvement> CharInvolvementRepo { get; }
         public IRepository<Product> ProductRepo { get; }
         public IRepository<User> UserRepo { get; }
+        public IRepository<Usage> UsageRepo { get; }
 
-        public IRepository<MonthlyUsage> UsageRepo { get; }
 
-        public UnitOfWork(TelcoShopDbContext context,
+        public UnitOfWork(TelcoShopDBContext context,
             IRepository<ActiveProduct> activeProductRepo,
             IRepository<BillingAccount> billingAccountRepo,
             IRepository<Characteristic> characteristicRepo,
             IRepository<CharInvolvement> charInvolvementRepo,
             IRepository<Product> productRepo,
-            IRepository<User> userRepo,
-            IRepository<MonthlyUsage> usageRepo)
+            IRepository<User> userRepo
+,
+            IRepository<Usage> usageRepo)
         {
             _context = context;
             ActiveProductRepo = activeProductRepo;

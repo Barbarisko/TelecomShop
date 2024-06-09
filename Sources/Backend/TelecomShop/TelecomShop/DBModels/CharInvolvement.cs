@@ -5,6 +5,7 @@ namespace TelecomShop.DBModels;
 
 public partial class CharInvolvement : BaseEntity
 {
+
     public int? ProductId { get; set; }
 
     public int? CharId { get; set; }

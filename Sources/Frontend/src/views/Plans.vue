@@ -24,6 +24,10 @@ import Plan from '@/components/Plan.vue'
 import SelectedPlanModel from '@/models/SelectedPlanModel';
 import PlanConfiguration from '@/components/PlanConfiguration.vue';
 import { useRouter } from 'vue-router';
+import { ToastLevel, useToastStore } from '@/stores/toast';
+import { error } from 'console';
+
+const toastStore = useToastStore();
 const router = useRouter();
 
 
@@ -57,7 +61,12 @@ async function onUpdatePlan(payload: { id: number, chars: Map<string, string>}) 
     let res = await ChangePlan(payload.id, payload.chars);
     if(res.success && res.Get())
     {
+        toastStore.showToast({level:ToastLevel.Info, title:"Success", message:"Plan changed successfully"})
         router.push('/home')
     }
+    else {
+        toastStore.showToast({level:ToastLevel.Error, title:"Error", message:res.error})
+    }
+
 }
 </script>
