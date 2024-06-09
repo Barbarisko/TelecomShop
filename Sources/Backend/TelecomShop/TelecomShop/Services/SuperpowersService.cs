@@ -23,14 +23,15 @@ namespace TelecomShop.Services
                             || productOption.ActiveFrom == null)
                             && (productOption.ActiveTo >= DateOnly.FromDateTime(DateTime.Now)
                             || productOption.ActiveTo == null)
-                            && productOption.ParentId == planId;
+                            && productOption.ParentId == planId
+                            ;
                 });
         }
 
         public void DisconnectAddon(int addonId)
         {
             // TODO: Change Status to disconnected
-            var activeAddon = unitOfWork.ActiveProductRepo.Get(addonId);
+            var activeAddon = unitOfWork.ActiveProductRepo.GetAll().Where((p) => p.ProductId == addonId && p.ParentProductId!=null&&p.Status=="Active").First();
             if (activeAddon == null)
             {
                 throw new KeyNotFoundException();
@@ -46,9 +47,10 @@ namespace TelecomShop.Services
 
             activePlan.OneTimeTotal -= addon.PriceOneTime;
             activePlan.RecurrentTotal -= addon.PriceRecurrent;
-            unitOfWork.ActiveProductRepo.Delete(addonId);
+            activeAddon.Status = "Disconnected";
 
             unitOfWork.ActiveProductRepo.Update(activePlan);
+            unitOfWork.ActiveProductRepo.Update(activeAddon);
 
             unitOfWork.Save();
         }

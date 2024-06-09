@@ -41,16 +41,16 @@
             <h3>Your current superpowers:</h3>
             <div v-if="activepowers.length==0">
                 <p>There are currently no superpowers activated. Would you like some?</p>
-                <RouterLink class="btn btn-primary" to="/superpowers" 
-                                style="display: flex; align-items: center;justify-content: center;">
-                                Select Superpowers
-                </RouterLink>
-            </div>
-
-            <Superpower v-for="p in activepowers" :power="p" :hardcoded-width="false" :show-buttons="false"
+                </div>
+            <RouterLink class="btn btn-primary" to="/superpowers" 
+                            style="display: flex; align-items: center;justify-content: center;">
+                            Select Superpowers
+            </RouterLink>
+            <div v-for="p in activepowers" class="container">
+            <Superpower v-if="p.isActive==true" :power="p" :hardcoded-width="false" :show-buttons="false"
                 class="my-2">
             </Superpower>
-            
+            </div>            
         </div>
     </div>
 </div>

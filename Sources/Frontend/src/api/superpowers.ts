@@ -101,3 +101,38 @@ export async function ConnectSuperpower(addonId: number): Promise<CallResult<boo
         return new CallResult<boolean>(false, (error as Error).message);
     }
 }
+
+export async function DisconnectSuperpower(addonId: number): Promise<CallResult<boolean>> {
+    try {
+        const loginStore = useLoginStore()
+
+        var url = buildUrl(constants.BASE_URL, {
+            path: '/superpowers/DisconnectSuperpower',
+            queryParams:{
+                addonId: addonId
+            }
+        });
+        if (url == undefined) {
+            return new CallResult<boolean>(false, "Could not buid api request");
+        }
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + loginStore.data.token
+            }
+        })
+
+        const data = await response.json();
+        if(!response.ok)
+            return new CallResult<boolean>(false, "Unsuccessful call " + data.detail);
+        if (data == undefined) {
+            throw new Error("No token in response");
+        }
+        return new CallResult<boolean>(true, "", data);
+    } catch (error: any) {
+        // Handle any errors that occur during the API call
+        console.error(error)
+        return new CallResult<boolean>(false, (error as Error).message);
+    }
+}

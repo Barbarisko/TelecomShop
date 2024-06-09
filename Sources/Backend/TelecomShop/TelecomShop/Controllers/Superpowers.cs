@@ -132,8 +132,8 @@ namespace TelecomShop.Controllers
             return superpowers;
         }
 
-        [HttpDelete]
-        public bool DisconnectSuperpower(int addonId)
+        [HttpPost]
+        public bool DisconnectSuperpower([Required]int addonId)
         {
             superpowerService.DisconnectAddon(addonId);
             return true;

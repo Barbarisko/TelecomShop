@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
 import { useLoginStore } from '@/stores/login'
+
+
 const loginStore = useLoginStore();
 const router = useRouter();
 function LogOut()
@@ -19,6 +21,7 @@ function SignUp()
 </script>
 
 <template>
+
   <header class="p-3 text-bg-dark">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
